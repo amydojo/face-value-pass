@@ -1,0 +1,201 @@
+/*
+ * Face Value · Figma Motion Runtime
+ * Implements node 751:141 after the physical reader capture completes.
+ */
+
+.matrix-code {
+  position: relative;
+  overflow: visible;
+}
+
+.matrix-redemption {
+  position: absolute;
+  z-index: 12;
+  inset: -5px;
+  pointer-events: none;
+}
+
+.matrix-redemption__halo {
+  position: absolute;
+  inset: 0;
+  border: 1px solid var(--signal);
+  border-radius: 5px;
+  box-shadow: 0 0 5px rgba(244, 119, 33, 0.28);
+  opacity: 0;
+}
+
+.matrix-redemption__cells,
+.matrix-redemption__well-layer {
+  position: absolute;
+  inset: 12px;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-rows: repeat(3, minmax(0, 1fr));
+  gap: 3px;
+}
+
+.matrix-redemption__cell {
+  border-radius: 2px;
+  background: var(--signal);
+  box-shadow: 0 0 6px rgba(244, 119, 33, 0.44);
+  opacity: 0;
+  transform: scale(0.72);
+}
+
+.matrix-redemption__well {
+  grid-column: 3;
+  grid-row: 3;
+  align-self: stretch;
+  justify-self: stretch;
+  border: 1px solid rgba(184, 178, 168, 0.5);
+  border-radius: 2px;
+  background: var(--paper);
+  box-shadow:
+    inset 0 2px 3px rgba(0, 0, 0, 0.3),
+    0 -1px 1px rgba(255, 255, 255, 0.72);
+  opacity: 0;
+  transform: scale(0.38);
+}
+
+.matrix-redemption__label {
+  position: absolute;
+  top: calc(100% + 7px);
+  right: -1px;
+  min-width: max-content;
+  color: var(--signal);
+  font: 700 clamp(5px, 1.35vw, 8px)/1 var(--mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0;
+}
+
+.matrix-code.is-punched > i:nth-child(11) {
+  opacity: 0 !important;
+}
+
+.reader__verification-viewport {
+  position: absolute;
+  z-index: 6;
+  left: 7%;
+  right: 7%;
+  top: 7px;
+  height: 20px;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.reader__verification-sweep {
+  position: absolute;
+  left: 50%;
+  top: 6px;
+  width: 84px;
+  height: 4px;
+  margin-left: -42px;
+  border-radius: 3px;
+  background: linear-gradient(
+    90deg,
+    rgba(244, 119, 33, 0),
+    var(--signal) 50%,
+    rgba(244, 119, 33, 0)
+  );
+  box-shadow: 0 0 9px 1px rgba(244, 119, 33, 0.72);
+  opacity: 0;
+  transform: translateX(-230px);
+}
+
+.redemption-chip,
+.redemption-actuator {
+  position: absolute;
+  z-index: 46;
+  pointer-events: none;
+  opacity: 0;
+}
+
+.redemption-chip {
+  width: 16px;
+  height: 16px;
+  border: 1px solid rgba(255, 173, 107, 0.72);
+  border-radius: 3px;
+  background: var(--signal);
+  box-shadow:
+    0 5px 8px rgba(0, 0, 0, 0.28),
+    0 0 9px 1px rgba(244, 119, 33, 0.58);
+}
+
+.redemption-actuator {
+  --size: 54px;
+  transform-origin: 50% 50%;
+}
+
+.portal[data-redemption-motion="active"] .artifact-controls {
+  display: none !important;
+}
+
+.portal[data-redemption-motion="active"] .reader__light {
+  animation: none !important;
+}
+
+/*
+ * Card is already physically aligned by script.js.
+ * Intake continues from that exact world transform with no coordinate reset.
+ */
+.portal[data-redemption-motion="active"] .specimen[data-intake="consuming"] {
+  animation: fv-figma-card-intake 480ms ease-in forwards;
+}
+
+.portal[data-redemption-motion="active"] .handoff {
+  background:
+    radial-gradient(circle at 50% 28%, rgba(244, 119, 33, 0.14), transparent 24%),
+    radial-gradient(circle at 50% 58%, rgba(244, 119, 33, 0.07), transparent 34%),
+    #090909;
+}
+
+.portal[data-redemption-motion="active"] .handoff__eyebrow {
+  color: var(--signal);
+}
+
+.portal[data-redemption-motion="active"] .handoff h1 {
+  max-width: 560px;
+}
+
+@keyframes fv-figma-card-intake {
+  0% {
+    opacity: 1;
+    transform:
+      translate3d(var(--world-x), var(--world-y), 0)
+      scale(var(--world-scale));
+  }
+  85% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform:
+      translate3d(var(--world-x), calc(var(--world-y) + 188px), 0)
+      scale(var(--world-scale));
+  }
+}
+
+@media (max-width: 640px) {
+  .matrix-redemption__cells,
+  .matrix-redemption__well-layer {
+    inset: 10px;
+  }
+  .matrix-redemption__label { font-size: 5px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reader__verification-sweep,
+  .matrix-redemption__halo,
+  .matrix-redemption__cell,
+  .matrix-redemption__well,
+  .matrix-redemption__label,
+  .redemption-chip,
+  .redemption-actuator {
+    animation: none !important;
+    transition: none !important;
+  }
+  .portal[data-redemption-motion="active"] .specimen[data-intake="consuming"] {
+    animation-duration: 0.001ms !important;
+  }
+}

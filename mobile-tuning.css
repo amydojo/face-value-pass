@@ -1,0 +1,47 @@
+/* Mobile product-scale tuning for the Specimen Pass portal. */
+
+@media (max-width: 640px) {
+  .artifact-stage {
+    gap: 11px;
+    padding: 82px 18px 40px;
+  }
+
+  .specimen {
+    width: min(82%, 330px);
+  }
+
+  .reader,
+  .portal[data-redemption-motion="active"] .reader {
+    width: min(86%, 300px) !important;
+    --reader-mouth-width: 88% !important;
+  }
+
+  .reader__hardware {
+    height: 56px;
+    border-radius: 10px;
+  }
+
+  .reader__hardware::after {
+    border-radius: 0 0 10px 10px;
+  }
+
+  .reader__light {
+    top: 14px;
+  }
+
+  .field-status {
+    left: 18px;
+    right: 18px;
+  }
+}
+
+@media (max-width: 390px) {
+  .specimen {
+    width: min(80%, 304px);
+  }
+
+  .reader,
+  .portal[data-redemption-motion="active"] .reader {
+    width: min(84%, 284px) !important;
+  }
+}
