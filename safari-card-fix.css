@@ -1,12 +1,18 @@
 /*
- * Mobile Safari can flatten a rotating 3D element when that element also
- * carries a CSS filter. When flattened, WebKit may paint the mirrored front
- * instead of the intentionally separate reverse artwork. Keep the shadow on
- * the sibling shadow layer and make face ownership explicit.
+ * Mobile Safari card hardening.
+ *
+ * Keep all visual shadowing outside the rotating face planes. A shadow or
+ * blend layer on an individual 3D face can be promoted as a rectangular
+ * compositor surface and bleed across the reverse artwork on iOS Safari.
  */
 
 .artifact-stage {
   -webkit-perspective: 1400px;
+}
+
+/* Keep the registration frame clear of the status copy. */
+.field::before {
+  top: clamp(88px, 10vw, 108px);
 }
 
 .specimen,
@@ -15,10 +21,29 @@
   transform-style: preserve-3d;
 }
 
-.specimen__card {
-  /* filter creates a flattening context in iOS Safari */
+.specimen__card,
+.specimen[data-face="back"] .specimen__card {
+  /* A filter on the rotating stack flattens it in iOS Safari. */
   filter: none;
   will-change: transform;
+  -webkit-transform:
+    rotateX(2deg)
+    rotateY(calc(var(--flip-rotation, 0deg) + var(--drag-rotation, 0deg)))
+    rotateZ(var(--card-z, -1deg));
+  transform:
+    rotateX(2deg)
+    rotateY(calc(var(--flip-rotation, 0deg) + var(--drag-rotation, 0deg)))
+    rotateZ(var(--card-z, -1deg));
+}
+
+.specimen[data-face="back"] {
+  --card-z: 1deg;
+}
+
+/* The sibling shadow is the only card shadow surface. */
+.specimen__shadow {
+  pointer-events: none;
+  opacity: 0.72;
 }
 
 .card-face {
@@ -26,7 +51,7 @@
   transform-style: preserve-3d;
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
-  box-shadow: 0 18px 24px rgba(10, 10, 10, 0.18);
+  box-shadow: none;
   will-change: transform, opacity;
 }
 
@@ -44,6 +69,11 @@
   pointer-events: none;
 }
 
+/* Do not put a blend-mode texture plane over the light reverse artwork. */
+.card-face--back::after {
+  display: none;
+}
+
 .specimen[data-face="back"] .card-face--front {
   opacity: 0;
   pointer-events: none;
@@ -52,6 +82,12 @@
 .specimen[data-face="back"] .card-face--back {
   opacity: 1;
   pointer-events: auto;
+}
+
+@media (max-width: 640px) {
+  .field::before {
+    top: 112px;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
