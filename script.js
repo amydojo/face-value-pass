@@ -3,7 +3,7 @@
 
   const safariCardFix = document.createElement('link');
   safariCardFix.rel = 'stylesheet';
-  safariCardFix.href = '/safari-card-fix.css?v=20260803-1';
+  safariCardFix.href = '/safari-card-fix.css?v=20260803-2';
   document.head.append(safariCardFix);
 
   const portal = document.querySelector('.portal');
@@ -15,7 +15,16 @@
   const accepted = document.querySelector('[data-accepted]');
   const replayButton = document.querySelector('[data-replay]');
 
-  if (!portal || !specimen || !actuator || !flipButton || !statusLine || !accepted || !replayButton) {
+  if (
+    !portal
+    || !specimen
+    || !actuator
+    || !flipButton
+    || !controls
+    || !statusLine
+    || !accepted
+    || !replayButton
+  ) {
     return;
   }
 
@@ -23,6 +32,9 @@
   let face = 'front';
   let pointerStart = null;
   let activationTimer = null;
+  let flipUnlockTimer = null;
+  let flipRotation = 0;
+  let isFlipping = false;
 
   function setFace(nextFace) {
     face = nextFace;
@@ -38,10 +50,21 @@
     );
   }
 
-  function flip() {
-    if (portal.dataset.stage !== 'receiving') return;
+  function flip(direction = -1) {
+    if (portal.dataset.stage !== 'receiving' || isFlipping) return;
+
+    const normalizedDirection = direction < 0 ? -1 : 1;
+    isFlipping = true;
+    flipRotation += normalizedDirection * 180;
+    specimen.style.setProperty('--flip-rotation', `${flipRotation}deg`);
     setFace(face === 'front' ? 'back' : 'front');
+
     if ('vibrate' in navigator) navigator.vibrate(8);
+
+    if (flipUnlockTimer) window.clearTimeout(flipUnlockTimer);
+    flipUnlockTimer = window.setTimeout(() => {
+      isFlipping = false;
+    }, prefersReducedMotion.matches ? 20 : 800);
   }
 
   function setActuatorState(state) {
@@ -51,7 +74,7 @@
   }
 
   function activate() {
-    if (portal.dataset.stage !== 'receiving' || face !== 'front') return;
+    if (portal.dataset.stage !== 'receiving' || face !== 'front' || isFlipping) return;
 
     portal.dataset.stage = 'activating';
     controls.setAttribute('aria-hidden', 'true');
@@ -84,6 +107,10 @@
 
   function replay() {
     if (activationTimer) window.clearTimeout(activationTimer);
+    if (flipUnlockTimer) window.clearTimeout(flipUnlockTimer);
+    isFlipping = false;
+    flipRotation = 0;
+    specimen.style.setProperty('--flip-rotation', '0deg');
     accepted.classList.remove('is-visible');
     accepted.hidden = true;
     portal.dataset.stage = 'receiving';
@@ -96,13 +123,13 @@
 
   specimen.addEventListener('pointerdown', (event) => {
     if (event.target.closest('button, a')) return;
-    if (portal.dataset.stage !== 'receiving') return;
+    if (portal.dataset.stage !== 'receiving' || isFlipping) return;
     pointerStart = { x: event.clientX, y: event.clientY };
     specimen.setPointerCapture?.(event.pointerId);
   });
 
   specimen.addEventListener('pointermove', (event) => {
-    if (!pointerStart || portal.dataset.stage !== 'receiving') return;
+    if (!pointerStart || portal.dataset.stage !== 'receiving' || isFlipping) return;
     const deltaX = event.clientX - pointerStart.x;
     specimen.style.setProperty('--drag-rotation', `${Math.max(-16, Math.min(16, deltaX / 9))}deg`);
   });
@@ -112,8 +139,13 @@
     const deltaX = event.clientX - pointerStart.x;
     const deltaY = event.clientY - pointerStart.y;
     pointerStart = null;
+
+    if (Math.abs(deltaX) > 54 && Math.abs(deltaX) > Math.abs(deltaY)) {
+      flip(deltaX < 0 ? -1 : 1);
+      return;
+    }
+
     specimen.style.removeProperty('--drag-rotation');
-    if (Math.abs(deltaX) > 54 && Math.abs(deltaX) > Math.abs(deltaY)) flip();
   });
 
   specimen.addEventListener('pointercancel', () => {
@@ -122,13 +154,23 @@
   });
 
   specimen.addEventListener('keydown', (event) => {
-    if (event.key === 'ArrowLeft' || event.key === 'ArrowRight' || event.key.toLowerCase() === 'f') {
+    if (event.key === 'ArrowLeft') {
       event.preventDefault();
-      flip();
+      flip(-1);
+      return;
+    }
+    if (event.key === 'ArrowRight') {
+      event.preventDefault();
+      flip(1);
+      return;
+    }
+    if (event.key.toLowerCase() === 'f') {
+      event.preventDefault();
+      flip(-1);
     }
   });
 
-  flipButton.addEventListener('click', flip);
+  flipButton.addEventListener('click', () => flip(-1));
   actuator.addEventListener('click', (event) => {
     event.stopPropagation();
     activate();
