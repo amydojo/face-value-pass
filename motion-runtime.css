@@ -1,7 +1,6 @@
 /*
  * Face Value · Figma Motion Runtime
- * Implements node 751:141 as a one-shot production ritual.
- * The existing flip/reader controller remains the interaction authority.
+ * Implements node 751:141 after the physical reader capture completes.
  */
 
 .matrix-code {
@@ -76,11 +75,11 @@
 
 .reader__verification-viewport {
   position: absolute;
-  z-index: 4;
-  left: 8%;
-  right: 8%;
+  z-index: 6;
+  left: 7%;
+  right: 7%;
   top: 7px;
-  height: 18px;
+  height: 20px;
   overflow: hidden;
   pointer-events: none;
 }
@@ -88,7 +87,7 @@
 .reader__verification-sweep {
   position: absolute;
   left: 50%;
-  top: 5px;
+  top: 6px;
   width: 84px;
   height: 4px;
   margin-left: -42px;
@@ -132,28 +131,15 @@
   display: none !important;
 }
 
-.portal[data-redemption-motion="active"] .reader {
-  width: min(96%, 520px);
-}
-
-.portal[data-redemption-motion="active"] .reader__mouth {
-  left: 2%;
-  right: 2%;
-}
-
 .portal[data-redemption-motion="active"] .reader__light {
   animation: none !important;
 }
 
+/*
+ * Card is already physically aligned by script.js.
+ * Intake continues from that exact world transform with no coordinate reset.
+ */
 .portal[data-redemption-motion="active"] .specimen[data-intake="consuming"] {
-  opacity: 1;
-  transform:
-    translate3d(
-      var(--intake-x, 0px),
-      var(--intake-y, 0px),
-      0
-    )
-    scale(0.965);
   animation: fv-figma-card-intake 480ms ease-in forwards;
 }
 
@@ -176,8 +162,8 @@
   0% {
     opacity: 1;
     transform:
-      translate3d(var(--intake-x, 0px), var(--intake-y, 0px), 0)
-      scale(0.965);
+      translate3d(var(--world-x), var(--world-y), 0)
+      scale(var(--world-scale));
   }
   85% {
     opacity: 1;
@@ -185,28 +171,17 @@
   100% {
     opacity: 0;
     transform:
-      translate3d(
-        var(--intake-x, 0px),
-        calc(var(--intake-y, 0px) + 188px),
-        0
-      )
-      scale(0.965);
+      translate3d(var(--world-x), calc(var(--world-y) + 188px), 0)
+      scale(var(--world-scale));
   }
 }
 
 @media (max-width: 640px) {
-  .portal[data-redemption-motion="active"] .reader {
-    width: min(100%, 440px);
-  }
-
   .matrix-redemption__cells,
   .matrix-redemption__well-layer {
     inset: 10px;
   }
-
-  .matrix-redemption__label {
-    font-size: 5px;
-  }
+  .matrix-redemption__label { font-size: 5px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -220,7 +195,6 @@
     animation: none !important;
     transition: none !important;
   }
-
   .portal[data-redemption-motion="active"] .specimen[data-intake="consuming"] {
     animation-duration: 0.001ms !important;
   }
