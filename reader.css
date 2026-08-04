@@ -1,0 +1,356 @@
+/* Face Value Evidence Intake / Reader 01 */
+
+.aperture,
+.accepted {
+  display: none !important;
+}
+
+.artifact-stage {
+  gap: clamp(13px, 2.3vh, 22px);
+  padding-bottom: 34px;
+}
+
+.specimen {
+  touch-action: none;
+  transform-origin: 50% 72%;
+  transition:
+    transform var(--intake-duration, 300ms) cubic-bezier(0.18, 0.82, 0.2, 1),
+    opacity 220ms ease;
+}
+
+.specimen[data-intake="aligning"] {
+  animation: none;
+  transform:
+    translate3d(var(--intake-x, 0px), var(--intake-y, 0px), 0)
+    rotateZ(0deg)
+    scale(0.965);
+}
+
+.specimen[data-intake="consuming"] {
+  animation: none;
+  transform:
+    translate3d(
+      var(--intake-x, 0px),
+      calc(var(--intake-y, 0px) + 42px),
+      0
+    )
+    scale(0.82, 0.055);
+  opacity: 0;
+}
+
+.specimen[data-presenting="true"] .specimen__shadow {
+  opacity: calc(0.42 - (var(--reader-progress, 0) * 0.22));
+  transform:
+    translate3d(0, calc(var(--reader-progress, 0) * 12px), 0)
+    scale(calc(1 - (var(--reader-progress, 0) * 0.18)));
+}
+
+.artifact-controls {
+  transition: opacity 220ms ease, transform 260ms ease;
+}
+
+.reader {
+  --reader-signal: #f47721;
+  position: relative;
+  z-index: 5;
+  width: min(76%, 340px);
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  font-family: var(--mono);
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  transition: opacity 240ms ease, transform 320ms cubic-bezier(0.18, 0.82, 0.2, 1);
+}
+
+.reader__prompt,
+.reader__hint {
+  margin: 0;
+  text-align: center;
+}
+
+.reader__prompt {
+  min-height: 12px;
+  color: var(--ink);
+  font-size: 8px;
+  font-weight: 700;
+}
+
+.reader__hint {
+  color: var(--muted);
+  font-size: 7px;
+  font-weight: 600;
+}
+
+.reader__hardware {
+  position: relative;
+  width: 100%;
+  height: clamp(52px, 7.2vh, 68px);
+  padding: 0;
+  border: 0;
+  border-radius: 8px;
+  background:
+    linear-gradient(180deg, #2a2a29 0%, #151515 44%, #090909 100%);
+  box-shadow:
+    0 12px 24px rgba(10, 10, 10, 0.16),
+    inset 0 1px rgba(255, 255, 255, 0.08),
+    inset 0 -12px 18px rgba(0, 0, 0, 0.32);
+  cursor: pointer;
+  overflow: hidden;
+  isolation: isolate;
+  transition:
+    transform 260ms cubic-bezier(0.2, 0.82, 0.24, 1),
+    box-shadow 260ms ease;
+}
+
+.reader__hardware:focus-visible {
+  outline: 2px solid var(--reader-signal);
+  outline-offset: 4px;
+}
+
+.reader__surface {
+  position: absolute;
+  inset: 6px 8px auto;
+  height: 34%;
+  border-radius: 5px 5px 2px 2px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0));
+  pointer-events: none;
+}
+
+.reader__light {
+  position: absolute;
+  z-index: 3;
+  left: 13%;
+  right: 13%;
+  top: 15px;
+  height: 2px;
+  border-radius: 99px;
+  background: var(--reader-signal);
+  box-shadow:
+    0 0 5px rgba(244, 119, 33, 0.34),
+    0 0 14px rgba(244, 119, 33, 0.12);
+  opacity: 0.38;
+  transform: scaleX(0.72);
+  transition: opacity 180ms ease, transform 280ms ease, box-shadow 220ms ease;
+}
+
+.reader__mouth {
+  position: absolute;
+  z-index: 2;
+  left: 10%;
+  right: 10%;
+  bottom: 8px;
+  height: 48%;
+  border-radius: 2px 2px 24px 24px;
+  background:
+    linear-gradient(180deg, #030303, #0a0a0a 38%, #161616 100%);
+  clip-path: polygon(0 0, 100% 0, 94% 52%, 80% 84%, 50% 100%, 20% 84%, 6% 52%);
+  box-shadow: inset 0 12px 16px rgba(255, 255, 255, 0.025);
+  transform-origin: top;
+  transition: transform 300ms cubic-bezier(0.2, 0.78, 0.2, 1);
+}
+
+.reader__depth {
+  position: absolute;
+  z-index: 1;
+  left: 14%;
+  right: 14%;
+  bottom: 5px;
+  height: 10px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.68);
+  filter: blur(5px);
+  pointer-events: none;
+}
+
+.reader[data-reader-state="magnetic"] .reader__hardware,
+.reader[data-reader-state="aligning"] .reader__hardware {
+  transform: translateY(-2px) scale(1.012);
+  box-shadow:
+    0 15px 30px rgba(10, 10, 10, 0.2),
+    0 0 0 1px rgba(244, 119, 33, 0.12),
+    inset 0 1px rgba(255, 255, 255, 0.1),
+    inset 0 -12px 18px rgba(0, 0, 0, 0.34);
+}
+
+.reader[data-reader-state="magnetic"] .reader__light,
+.reader[data-reader-state="aligning"] .reader__light {
+  opacity: 0.76;
+  transform: scaleX(0.9);
+  box-shadow:
+    0 0 7px rgba(244, 119, 33, 0.56),
+    0 0 18px rgba(244, 119, 33, 0.22);
+}
+
+.reader[data-reader-state="scanning"] .reader__light {
+  opacity: 1;
+  transform: scaleX(1);
+  animation: reader-verify 430ms ease-in-out infinite alternate;
+}
+
+.reader[data-reader-state="accepted"] .reader__light,
+.reader[data-reader-state="intake"] .reader__light {
+  opacity: 1;
+  transform: scaleX(1);
+  box-shadow:
+    0 0 9px rgba(244, 119, 33, 0.72),
+    0 0 24px rgba(244, 119, 33, 0.34);
+}
+
+.reader[data-reader-state="intake"] .reader__mouth {
+  transform: scaleY(1.18);
+}
+
+.portal[data-stage="aligning"] .artifact-controls,
+.portal[data-stage="verifying"] .artifact-controls,
+.portal[data-stage="intake"] .artifact-controls,
+.portal[data-stage="handoff"] .artifact-controls {
+  opacity: 0;
+  transform: translateY(6px);
+  pointer-events: none;
+}
+
+.portal[data-stage="verifying"] .reader,
+.portal[data-stage="intake"] .reader {
+  transform: translateY(-3px);
+}
+
+.handoff {
+  position: absolute;
+  z-index: 40;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 15px;
+  padding: 32px;
+  background:
+    radial-gradient(circle at 50% 58%, rgba(244, 119, 33, 0.09), transparent 30%),
+    #090909;
+  color: var(--paper);
+  opacity: 0;
+  pointer-events: none;
+  text-align: center;
+}
+
+.handoff[hidden] {
+  display: none;
+}
+
+.handoff.is-visible {
+  animation: handoff-arrive 360ms ease forwards;
+}
+
+.handoff__eyebrow,
+.handoff__fallback {
+  margin: 0;
+  font-family: var(--mono);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.handoff__eyebrow {
+  color: var(--reader-signal);
+  font-size: 9px;
+  font-weight: 700;
+}
+
+.handoff h1 {
+  max-width: 520px;
+  margin: 0;
+  font-size: clamp(34px, 8vw, 66px);
+  line-height: 0.94;
+  letter-spacing: -0.055em;
+  font-weight: 520;
+}
+
+.handoff__line {
+  width: min(72vw, 420px);
+  height: 2px;
+  background: var(--reader-signal);
+  box-shadow: 0 0 12px rgba(244, 119, 33, 0.48);
+  transform: scaleX(0.04);
+}
+
+.handoff.is-visible .handoff__line {
+  animation: handoff-line 620ms 150ms cubic-bezier(0.16, 0.8, 0.18, 1) forwards;
+}
+
+.handoff__fallback {
+  color: rgba(247, 246, 241, 0.62);
+  font-size: 8px;
+}
+
+.handoff__fallback a {
+  color: var(--paper);
+  text-decoration-color: var(--reader-signal);
+  text-underline-offset: 4px;
+}
+
+@keyframes reader-verify {
+  from {
+    transform: scaleX(0.7) translateX(-8%);
+    filter: brightness(0.9);
+  }
+  to {
+    transform: scaleX(1) translateX(0);
+    filter: brightness(1.3);
+  }
+}
+
+@keyframes handoff-arrive {
+  to { opacity: 1; }
+}
+
+@keyframes handoff-line {
+  0% { transform: scaleX(0.04); }
+  64% { transform: scaleX(1); }
+  100% { transform: scaleX(1); opacity: 0.72; }
+}
+
+@media (max-width: 640px) {
+  .artifact-stage {
+    gap: 13px;
+    padding-bottom: 28px;
+  }
+
+  .reader {
+    width: min(72%, 300px);
+  }
+
+  .reader__hardware {
+    height: 54px;
+  }
+}
+
+@media (max-height: 720px) {
+  .reader__prompt,
+  .reader__hint {
+    display: none;
+  }
+
+  .reader__hardware {
+    height: 46px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .specimen,
+  .reader,
+  .reader__hardware,
+  .reader__light,
+  .reader__mouth,
+  .handoff,
+  .handoff__line {
+    animation: none !important;
+    transition-duration: 0.001ms !important;
+  }
+
+  .handoff.is-visible {
+    opacity: 1;
+  }
+
+  .handoff.is-visible .handoff__line {
+    transform: scaleX(1);
+  }
+}
