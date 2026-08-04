@@ -3,6 +3,7 @@
 
   const portal = document.querySelector('.portal');
   const specimen = document.querySelector('[data-specimen]');
+  const card = specimen?.querySelector('.specimen__card');
   const actuator = document.querySelector('[data-actuator]');
   const flipButton = document.querySelector('[data-flip]');
   const controls = document.querySelector('[data-artifact-controls]');
@@ -13,6 +14,7 @@
   if (
     !portal
     || !specimen
+    || !card
     || !actuator
     || !flipButton
     || !controls
@@ -27,9 +29,7 @@
   let face = 'front';
   let pointerStart = null;
   let activationTimer = null;
-  let flipMidpointTimer = null;
-  let flipSettleTimer = null;
-  let flipUnlockTimer = null;
+  let motionFallbackTimer = null;
   let flipRotation = 0;
   let dragRotation = 0;
   let isFlipping = false;
@@ -40,13 +40,9 @@
     specimen.style.setProperty(name, value);
   }
 
-  function clearMotionTimers() {
-    if (flipMidpointTimer) window.clearTimeout(flipMidpointTimer);
-    if (flipSettleTimer) window.clearTimeout(flipSettleTimer);
-    if (flipUnlockTimer) window.clearTimeout(flipUnlockTimer);
-    flipMidpointTimer = null;
-    flipSettleTimer = null;
-    flipUnlockTimer = null;
+  function clearMotionFallback() {
+    if (motionFallbackTimer) window.clearTimeout(motionFallbackTimer);
+    motionFallbackTimer = null;
   }
 
   function setFace(nextFace, announce = true) {
@@ -90,90 +86,97 @@
     delete specimen.dataset.dragging;
   }
 
-  function rebaseAtCurrentRotation() {
-    flipRotation += dragRotation;
-    setCss('--flip-rotation', `${flipRotation}deg`);
+  function finishMotion(nextFace = null) {
+    clearMotionFallback();
+    isFlipping = false;
     dragRotation = 0;
     setCss('--drag-rotation', '0deg');
-    void specimen.offsetWidth;
+    setCss('--settle-duration', '680ms');
+    delete specimen.dataset.motion;
+
+    if (nextFace) setFace(nextFace);
+    resetMaterial();
   }
 
-  function finishMotion(duration) {
-    flipUnlockTimer = window.setTimeout(() => {
-      isFlipping = false;
-      delete specimen.dataset.motion;
-      setCss('--settle-duration', '680ms');
-      resetMaterial();
-    }, duration);
+  function waitForTransform(duration, onDone) {
+    clearMotionFallback();
+    let completed = false;
+
+    const complete = () => {
+      if (completed) return;
+      completed = true;
+      card.removeEventListener('transitionend', handleTransitionEnd);
+      clearMotionFallback();
+      onDone();
+    };
+
+    const handleTransitionEnd = (event) => {
+      if (event.target !== card) return;
+      if (event.propertyName !== 'transform' && event.propertyName !== '-webkit-transform') return;
+      complete();
+    };
+
+    card.addEventListener('transitionend', handleTransitionEnd);
+    motionFallbackTimer = window.setTimeout(complete, duration + 120);
   }
 
   function animateFlip(direction = -1, speed = 0.8) {
     if (portal.dataset.stage !== 'receiving' || isFlipping) return;
 
-    clearMotionTimers();
     const normalizedDirection = direction < 0 ? -1 : 1;
     const nextFace = face === 'front' ? 'back' : 'front';
     const reduced = prefersReducedMotion.matches;
-    const travelDuration = reduced ? 20 : Math.round(clamp(560 - speed * 115, 370, 560));
-    const settleDuration = reduced ? 0 : 145;
-    const overshoot = reduced ? 0 : 4.5;
-    const startingRotation = flipRotation;
+    const currentRotation = flipRotation + dragRotation;
+    const targetRotation = flipRotation + normalizedDirection * 180;
+    const remainingAngle = Math.abs(targetRotation - currentRotation);
+    const distanceRatio = clamp(remainingAngle / 180, 0.24, 1);
+    const baseDuration = clamp(540 - speed * 105, 390, 540);
+    const duration = reduced ? 20 : Math.round(baseDuration * distanceRatio);
 
     isFlipping = true;
     setDragging(false);
     specimen.dataset.motion = 'flipping';
-    rebaseAtCurrentRotation();
+    statusLine.textContent = nextFace === 'front'
+      ? 'Returning specimen · front field'
+      : 'Turning specimen · reverse field';
 
-    const targetRotation = startingRotation + normalizedDirection * 180;
-    const overshootRotation = targetRotation + normalizedDirection * overshoot;
-
-    setCss('--settle-duration', `${travelDuration}ms`);
+    setCss('--settle-duration', `${duration}ms`);
     setCss('--drag-lift', reduced ? '0px' : '8px');
     setCss('--shadow-scale', '0.9');
     setCss('--shadow-opacity', '0.26');
     setCss('--glint-opacity', face === 'front' ? '0.34' : '0.42');
-    setCss('--flip-rotation', `${overshootRotation}deg`);
 
-    flipMidpointTimer = window.setTimeout(() => {
-      setFace(nextFace, false);
-      statusLine.textContent = nextFace === 'front'
-        ? 'Specimen Pass returned · actuator available'
-        : 'Reverse field receiving · inspecting object';
-    }, Math.round(travelDuration * 0.46));
+    // Enable transitions before committing one continuous transform from the
+    // exact dragged angle to the exact next face angle.
+    void card.offsetWidth;
+    dragRotation = 0;
+    flipRotation = targetRotation;
+    setCss('--drag-rotation', '0deg');
+    setCss('--flip-rotation', `${targetRotation}deg`);
 
-    flipSettleTimer = window.setTimeout(() => {
-      flipRotation = targetRotation;
-      specimen.dataset.motion = 'settling';
-      setCss('--settle-duration', `${settleDuration}ms`);
-      setCss('--flip-rotation', `${targetRotation}deg`);
-      setCss('--drag-lift', '0px');
-      setCss('--shadow-scale', '1');
-      setCss('--shadow-opacity', '0.42');
-      setCss('--glint-opacity', nextFace === 'front' ? '0.16' : '0.24');
-      statusLine.textContent = nextFace === 'front'
-        ? 'Specimen Pass received · actuator available'
-        : 'Reverse field inspected · return to front to activate';
-    }, travelDuration);
+    waitForTransform(duration, () => finishMotion(nextFace));
 
-    finishMotion(travelDuration + settleDuration + 40);
-
-    if ('vibrate' in navigator) navigator.vibrate([6, 26, 10]);
+    if ('vibrate' in navigator) navigator.vibrate([6, 24, 9]);
   }
 
   function springBack() {
     if (isFlipping) return;
+
+    const reduced = prefersReducedMotion.matches;
+    const distanceRatio = clamp(Math.abs(dragRotation) / 82, 0.2, 1);
+    const duration = reduced ? 20 : Math.round(180 + 150 * distanceRatio);
+
     isFlipping = true;
     setDragging(false);
     specimen.dataset.motion = 'settling';
-    rebaseAtCurrentRotation();
-
-    const duration = prefersReducedMotion.matches ? 20 : 300;
-    const targetRotation = Math.round(flipRotation / 180) * 180;
-    flipRotation = targetRotation;
     setCss('--settle-duration', `${duration}ms`);
-    setCss('--flip-rotation', `${targetRotation}deg`);
+
+    void card.offsetWidth;
+    dragRotation = 0;
+    setCss('--drag-rotation', '0deg');
     resetMaterial();
-    finishMotion(duration + 30);
+
+    waitForTransform(duration, () => finishMotion());
   }
 
   function setActuatorState(state) {
@@ -216,7 +219,7 @@
 
   function replay() {
     if (activationTimer) window.clearTimeout(activationTimer);
-    clearMotionTimers();
+    clearMotionFallback();
     isFlipping = false;
     pointerStart = null;
     flipRotation = 0;
