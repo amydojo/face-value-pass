@@ -16,9 +16,7 @@
 }
 
 * { box-sizing: border-box; }
-
 html { min-height: 100%; background: var(--paper); }
-
 body {
   min-width: 320px;
   min-height: 100dvh;
@@ -30,7 +28,6 @@ body {
   text-rendering: geometricPrecision;
   overflow-x: hidden;
 }
-
 button, a { font: inherit; }
 button { color: inherit; }
 
@@ -55,7 +52,6 @@ button { color: inherit; }
   grid-template-rows: auto 1fr auto;
   gap: 22px;
 }
-
 .portal-header,
 .portal-footer {
   position: relative;
@@ -65,7 +61,6 @@ button { color: inherit; }
   justify-content: space-between;
   gap: 18px;
 }
-
 .portal-header { min-height: 38px; }
 .portal-footer {
   padding-top: 14px;
@@ -104,9 +99,7 @@ button { color: inherit; }
 .card-url,
 .card-back__footer,
 .artifact-controls,
-.aperture p,
-.disclaimer,
-.replay {
+.disclaimer {
   font-family: var(--mono);
   text-transform: uppercase;
   letter-spacing: 0.08em;
@@ -123,7 +116,6 @@ button { color: inherit; }
     radial-gradient(circle at 50% 48%, rgba(255,255,255,0.9), rgba(247,246,241,0.58) 44%, rgba(231,229,222,0.55) 100%),
     var(--paper);
 }
-
 .field::before,
 .field::after {
   content: "";
@@ -131,10 +123,7 @@ button { color: inherit; }
   z-index: -1;
   pointer-events: none;
 }
-.field::before {
-  inset: 18px;
-  border: 1px solid rgba(10, 10, 10, 0.08);
-}
+.field::before { inset: 18px; border: 1px solid rgba(10, 10, 10, 0.08); }
 .field::after {
   width: 7px;
   height: 7px;
@@ -143,7 +132,6 @@ button { color: inherit; }
   border: 1px solid rgba(10, 10, 10, 0.28);
   transform: translate(-50%, -50%) rotate(45deg);
 }
-
 .field-grid {
   position: absolute;
   inset: 0;
@@ -155,18 +143,7 @@ button { color: inherit; }
   background-size: 24px 24px;
   mask-image: radial-gradient(circle at center, black 0, transparent 70%);
 }
-
-.field-scanline {
-  position: absolute;
-  z-index: 0;
-  left: 7%;
-  right: 7%;
-  top: 49%;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(244,119,33,0.42), transparent);
-  opacity: 0;
-}
-
+.field-scanline { display: none; }
 .field-status {
   position: absolute;
   z-index: 4;
@@ -191,7 +168,6 @@ button { color: inherit; }
   padding: 88px 24px 54px;
   perspective: 1400px;
 }
-
 .specimen {
   position: relative;
   width: min(84%, 490px);
@@ -225,7 +201,6 @@ button { color: inherit; }
 .specimen[data-face="back"] .specimen__card {
   transform: rotateX(2deg) rotateY(calc(180deg + var(--drag-rotation, 2deg))) rotateZ(1deg);
 }
-
 .card-face {
   position: absolute;
   inset: 0;
@@ -317,17 +292,16 @@ button { color: inherit; }
   animation: controls-arrive 900ms 650ms ease both;
 }
 .artifact-controls p { margin: 0; color: var(--muted); font-size: 8px; }
-.text-control,
-.replay {
+.text-control {
   border: 0;
+  border-bottom: 1px solid currentColor;
   background: transparent;
   padding: 8px;
   cursor: pointer;
   font-size: 10px;
   font-weight: 700;
 }
-.text-control { border-bottom: 1px solid currentColor; }
-.text-control:hover, .text-control:focus-visible, .replay:hover, .replay:focus-visible { color: var(--signal); }
+.text-control:hover, .text-control:focus-visible { color: var(--signal); }
 
 .actuator {
   --size: 64px;
@@ -384,7 +358,6 @@ button.actuator:focus-visible { outline: 2px solid var(--signal); outline-offset
 .actuator--mini { --size: 26px; }
 .actuator--card { --size: clamp(38px, 10vw, 58px); }
 .actuator--tiny { --size: clamp(23px, 6vw, 32px); }
-
 .actuator[data-actuator-state="ready"] .actuator__ring {
   opacity: 1;
   border-color: rgba(244,119,33,0.78);
@@ -415,102 +388,6 @@ button.actuator:focus-visible { outline: 2px solid var(--signal); outline-offset
     inset 0 -1px 2px rgba(255,255,255,0.14);
 }
 
-.aperture {
-  position: absolute;
-  z-index: 2;
-  left: 50%;
-  top: 50%;
-  width: min(88vw, 590px);
-  transform: translate(-50%, -50%) scaleX(0.72);
-  opacity: 0;
-  transition: opacity 500ms ease, transform 700ms cubic-bezier(.2,.8,.2,1);
-}
-.aperture__rail { height: 1px; background: rgba(10,10,10,0.3); }
-.aperture__mouth {
-  width: 84%;
-  height: clamp(24px, 5vw, 42px);
-  margin: -1px auto 0;
-  background: var(--ink);
-  border-radius: 0 0 50% 50%;
-  box-shadow: inset 0 12px 18px rgba(255,255,255,0.06), 0 16px 32px rgba(10,10,10,0.14);
-  clip-path: polygon(0 0,100% 0,94% 45%,82% 80%,50% 100%,18% 80%,6% 45%);
-}
-.aperture p { margin: 10px 0 0; text-align: center; color: var(--muted); font-size: 8px; font-weight: 700; }
-
-.accepted {
-  position: absolute;
-  z-index: 5;
-  inset: 0;
-  width: min(100%, 760px);
-  margin: auto;
-  padding: clamp(82px, 10vw, 118px) clamp(24px, 6vw, 64px) 48px;
-  overflow-y: auto;
-  opacity: 0;
-  transform: translateY(24px);
-}
-.accepted[hidden] { display: none; }
-.accepted.is-visible { animation: accepted-arrive 700ms cubic-bezier(.16,1,.3,1) forwards; }
-.accepted h1 {
-  max-width: 620px;
-  margin: 18px 0 20px;
-  font-size: clamp(42px, 9vw, 82px);
-  line-height: 0.92;
-  letter-spacing: -0.065em;
-  font-weight: 520;
-}
-.accepted__intro {
-  max-width: 590px;
-  margin: 0 0 38px;
-  font-size: clamp(16px, 2.6vw, 21px);
-  line-height: 1.45;
-  letter-spacing: -0.018em;
-}
-.process { margin: 0 0 38px; padding: 0; list-style: none; border-top: 1px solid var(--line); }
-.process li {
-  display: grid;
-  grid-template-columns: 40px 1fr;
-  gap: 18px;
-  padding: 18px 0;
-  border-bottom: 1px solid var(--line);
-}
-.process li > span { font: 700 10px/1.5 var(--mono); color: var(--signal); }
-.process strong { display: block; margin-bottom: 4px; font-size: 16px; font-weight: 600; }
-.process p { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.45; }
-.enter-button {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 24px;
-  width: 100%;
-  min-height: 58px;
-  padding: 0 18px;
-  background: var(--ink);
-  color: var(--paper);
-  text-decoration: none;
-  font: 700 11px/1 var(--mono);
-  letter-spacing: 0.08em;
-  transition: transform 160ms ease, background 160ms ease;
-}
-.enter-button:hover { background: var(--graphite); transform: translateY(-2px); }
-.enter-button:focus-visible { outline: 3px solid var(--signal); outline-offset: 3px; }
-.disclaimer { margin: 14px 0 0; color: var(--muted); font-size: 8px; }
-.replay { margin: 22px 0 0; padding-left: 0; color: var(--muted); }
-
-.portal[data-stage="activating"] .field-scanline { opacity: 1; animation: field-scan 950ms ease-in-out infinite; }
-.portal[data-stage="activating"] .aperture { opacity: 1; transform: translate(-50%, -50%) scaleX(1); }
-.portal[data-stage="activating"] .artifact-controls { opacity: 0; pointer-events: none; }
-.portal[data-stage="activating"] .specimen {
-  animation: specimen-intake 1250ms cubic-bezier(.3,.05,.2,1) forwards;
-  pointer-events: none;
-}
-.portal[data-stage="activating"] .specimen__shadow { opacity: 0; }
-.portal[data-stage="accepted"] .field-status,
-.portal[data-stage="accepted"] .artifact-stage,
-.portal[data-stage="accepted"] .aperture,
-.portal[data-stage="accepted"] .field::after { opacity: 0; pointer-events: none; }
-.portal[data-stage="accepted"] .field { min-height: 0; overflow: visible; }
-.portal[data-stage="accepted"] .accepted { position: relative; inset: auto; overflow: visible; }
-
 .noscript-card {
   position: fixed;
   inset: 20px;
@@ -532,14 +409,6 @@ button.actuator:focus-visible { outline: 2px solid var(--signal); outline-offset
 }
 @keyframes controls-arrive { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
 @keyframes actuator-scan { to { transform: rotate(360deg); } }
-@keyframes field-scan { 0%,100% { transform: translateY(-130px); opacity: 0; } 35%,65% { opacity: 1; } 50% { transform: translateY(130px); } }
-@keyframes specimen-intake {
-  0% { opacity: 1; transform: translate3d(0,0,0) rotateX(0) scale(1); }
-  30% { transform: translate3d(0,-18px,10px) rotateX(-5deg) scale(.97); }
-  76% { opacity: 1; transform: translate3d(0,10px,-70px) rotateX(74deg) scale(.72,.34); }
-  100% { opacity: 0; transform: translate3d(0,52px,-160px) rotateX(90deg) scale(.36,.05); }
-}
-@keyframes accepted-arrive { to { opacity: 1; transform: none; } }
 
 @media (max-width: 640px) {
   .portal { gap: 14px; }
@@ -554,7 +423,6 @@ button.actuator:focus-visible { outline: 2px solid var(--signal); outline-offset
   .card-face--back { padding: 14px; gap: 7px; }
   .actuator--card { --size: 35px; }
   .wordmark--reverse { font-size: 21px; }
-  .accepted { padding-top: 82px; }
 }
 
 @media (max-height: 650px) and (orientation: landscape) {
@@ -571,6 +439,5 @@ button.actuator:focus-visible { outline: 2px solid var(--signal); outline-offset
     transition-duration: 0.001ms !important;
   }
   .specimen { animation: none; }
-  .portal[data-stage="activating"] .specimen { opacity: 0; }
   .actuator[data-actuator-state="scanning"] .actuator__ring { animation: none; }
 }
