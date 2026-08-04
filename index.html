@@ -11,7 +11,7 @@
     <meta property="og:title" content="Face Value · Specimen Pass" />
     <meta
       property="og:description"
-      content="A physical object has been detected. Receive the artifact, inspect it, and enter the Face Value instrument."
+      content="A physical object has been detected. Receive the artifact, present it to the reader, and enter the Face Value instrument."
     />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://pass.facevalue.undone.design" />
@@ -19,6 +19,7 @@
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="/styles.css" />
     <link rel="stylesheet" href="/safari-card-fix.css?v=20260803-5" />
+    <link rel="stylesheet" href="/reader.css?v=20260803-6" />
     <title>Face Value · Specimen Pass</title>
   </head>
   <body>
@@ -48,19 +49,13 @@
           <p class="status-line" data-status-line>Receiving Specimen Pass · FV–01</p>
         </div>
 
-        <div class="aperture" aria-hidden="true">
-          <div class="aperture__rail"></div>
-          <div class="aperture__mouth"></div>
-          <p>OBJECT INTAKE / FV–01</p>
-        </div>
-
         <div class="artifact-stage" id="artifact">
           <div
             class="specimen"
             data-specimen
             data-face="front"
             role="group"
-            aria-label="Interactive Face Value Specimen Pass. Swipe horizontally or use the flip button to inspect both sides."
+            aria-label="Interactive Face Value Specimen Pass. Swipe horizontally to inspect both sides. On the reverse, drag down to present it to the reader."
             tabindex="0"
           >
             <div class="specimen__shadow" aria-hidden="true"></div>
@@ -73,7 +68,7 @@
                       type="button"
                       data-actuator
                       data-actuator-state="rest"
-                      aria-label="Activate Specimen Pass"
+                      aria-label="Present Specimen Pass to the instrument"
                     >
                       <span class="actuator__bezel"></span>
                       <span class="actuator__recess"></span>
@@ -107,7 +102,7 @@
                     <span class="actuator__gloss"></span>
                   </span>
                 </div>
-                <p class="card-back__headline">ENTER THE<br />INSTRUMENT.</p>
+                <p class="card-back__headline">PRESENT TO<br />INSTRUMENT.</p>
                 <div class="card-back__middle">
                   <p class="card-sequence">SCAN → OBSERVE<br />→ COMPARE → VERDICT</p>
                   <div class="matrix-code" aria-label="Decorative specimen matrix, not a scannable QR code">
@@ -125,42 +120,36 @@
             <button class="text-control" type="button" data-flip>
               FLIP OBJECT <span aria-hidden="true">↔</span>
             </button>
-            <p>Swipe horizontally to inspect</p>
+            <p data-instruction>Swipe horizontally to inspect</p>
+          </div>
+
+          <div class="reader" data-reader data-reader-state="idle">
+            <p class="reader__prompt" data-reader-prompt>READER STANDBY · INSPECT FV–01</p>
+            <button
+              class="reader__hardware"
+              type="button"
+              data-reader-slot
+              aria-label="Present Specimen Pass to Evidence Intake Reader 01"
+            >
+              <span class="reader__surface" aria-hidden="true"></span>
+              <span class="reader__light" aria-hidden="true"></span>
+              <span class="reader__mouth" aria-hidden="true"></span>
+              <span class="reader__depth" aria-hidden="true"></span>
+            </button>
+            <p class="reader__hint" data-reader-hint>FLIP TO REVERSE · THEN DRAG DOWN</p>
           </div>
         </div>
 
-        <section class="accepted" data-accepted hidden aria-labelledby="accepted-title">
-          <p class="eyebrow">ACCESS OBJECT ACCEPTED</p>
-          <h1 id="accepted-title" tabindex="-1">Evidence, before belief.</h1>
-          <p class="accepted__intro">
-            Face Value compares controlled skin evidence across time so you can decide whether a product earned its place.
+        <section class="handoff" data-handoff hidden aria-labelledby="handoff-title">
+          <p class="handoff__eyebrow">FV–01 VERIFIED</p>
+          <div class="handoff__line" aria-hidden="true"></div>
+          <h1 id="handoff-title">Instrument access granted.</h1>
+          <p class="handoff__fallback">
+            Opening Face Value ·
+            <a href="https://face-value-seven.vercel.app/?source=specimen-pass" data-handoff-link>
+              continue manually
+            </a>
           </p>
-
-          <ol class="process" aria-label="How Face Value works">
-            <li>
-              <span>01</span>
-              <div><strong>Register one product</strong><p>Assign one job and establish the trial conditions.</p></div>
-            </li>
-            <li>
-              <span>02</span>
-              <div><strong>Capture comparable evidence</strong><p>Record baseline and follow-up observations under matched conditions.</p></div>
-            </li>
-            <li>
-              <span>03</span>
-              <div><strong>Receive a restrained verdict</strong><p>See what changed, confidence, and the next proportionate action.</p></div>
-            </li>
-          </ol>
-
-          <a
-            class="enter-button"
-            href="https://face-value-seven.vercel.app/?source=specimen-pass"
-            data-enter
-          >
-            <span>ENTER THE INSTRUMENT</span>
-            <span aria-hidden="true">→</span>
-          </a>
-          <p class="disclaimer">Face Value compares evidence. It does not diagnose reactions.</p>
-          <button class="replay" type="button" data-replay>Return specimen</button>
         </section>
       </section>
 
@@ -176,6 +165,6 @@
         <a href="https://face-value-seven.vercel.app/?source=specimen-pass">Enter the Face Value instrument →</a>
       </div>
     </noscript>
-    <script src="/script.js?v=20260803-5" defer></script>
+    <script src="/script.js?v=20260803-6" defer></script>
   </body>
 </html>
