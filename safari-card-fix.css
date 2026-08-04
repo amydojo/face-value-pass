@@ -1,77 +1,180 @@
 /*
- * Mobile Safari card hardening.
+ * Face Value Specimen Pass physical-material hardening.
  *
- * Keep all visual shadowing outside the rotating face planes. A shadow or
- * blend layer on an individual 3D face can be promoted as a rectangular
- * compositor surface and bleed across the reverse artwork on iOS Safari.
+ * The rotating card never carries a filter, blur, blend mode, or drop shadow.
+ * Those effects can flatten a 3D stack in iOS Safari and create rectangular
+ * compositor bands across the artwork. Material texture is rendered directly
+ * in each face background; the contact shadow is a separate flat radial field.
  */
 
 .artifact-stage {
-  -webkit-perspective: 1400px;
+  -webkit-perspective: 1500px;
+  perspective: 1500px;
 }
 
-/* Keep the registration frame clear of the status copy. */
+/* The outer field border is enough. Remove the inner registration rectangle. */
 .field::before {
-  top: clamp(88px, 10vw, 108px);
+  display: none;
 }
 
-.specimen,
-.specimen__card {
+.specimen {
+  --flip-rotation: 0deg;
+  --drag-rotation: 0deg;
+  --drag-shift-x: 0px;
+  --drag-shift-y: 0px;
+  --drag-lift: 0px;
+  --tilt-x: 0deg;
+  --tilt-z: 0deg;
+  --card-z: -1deg;
+  --settle-duration: 680ms;
+  --shadow-shift-x: 0px;
+  --shadow-scale: 1;
+  --shadow-opacity: 0.42;
+  --glint-x: 24%;
+  --glint-y: 18%;
+  --glint-opacity: 0.16;
   -webkit-transform-style: preserve-3d;
   transform-style: preserve-3d;
-}
-
-.specimen__card,
-.specimen[data-face="back"] .specimen__card {
-  /* A filter on the rotating stack flattens it in iOS Safari. */
-  filter: none;
-  will-change: transform;
-  -webkit-transform:
-    rotateX(2deg)
-    rotateY(calc(var(--flip-rotation, 0deg) + var(--drag-rotation, 0deg)))
-    rotateZ(var(--card-z, -1deg));
-  transform:
-    rotateX(2deg)
-    rotateY(calc(var(--flip-rotation, 0deg) + var(--drag-rotation, 0deg)))
-    rotateZ(var(--card-z, -1deg));
 }
 
 .specimen[data-face="back"] {
   --card-z: 1deg;
 }
 
-/* The sibling shadow is the only card shadow surface. */
+.specimen__card {
+  z-index: 1;
+  filter: none;
+  will-change: transform;
+  -webkit-transform-style: preserve-3d;
+  transform-style: preserve-3d;
+  transition:
+    transform var(--settle-duration) cubic-bezier(0.18, 0.88, 0.22, 1.08);
+  -webkit-transform:
+    translate3d(var(--drag-shift-x), var(--drag-shift-y), var(--drag-lift))
+    rotateX(calc(2deg + var(--tilt-x)))
+    rotateY(calc(var(--flip-rotation) + var(--drag-rotation)))
+    rotateZ(calc(var(--card-z) + var(--tilt-z)));
+  transform:
+    translate3d(var(--drag-shift-x), var(--drag-shift-y), var(--drag-lift))
+    rotateX(calc(2deg + var(--tilt-x)))
+    rotateY(calc(var(--flip-rotation) + var(--drag-rotation)))
+    rotateZ(calc(var(--card-z) + var(--tilt-z)));
+}
+
+.specimen[data-dragging="true"] .specimen__card {
+  transition: none;
+}
+
+.specimen[data-dragging="true"] {
+  cursor: grabbing;
+}
+
+.specimen[data-motion="flipping"] .specimen__card {
+  transition-timing-function: cubic-bezier(0.16, 0.92, 0.25, 1.12);
+}
+
+.specimen[data-motion="settling"] .specimen__card {
+  transition-timing-function: cubic-bezier(0.2, 0.82, 0.28, 1.12);
+}
+
+/* Flat 2D contact shadow. No rotateX, blur filter, or 3D depth plane. */
 .specimen__shadow {
+  position: absolute;
+  z-index: 0;
+  left: 8%;
+  right: 8%;
+  top: auto;
+  bottom: -16%;
+  height: 34%;
+  border-radius: 50%;
   pointer-events: none;
-  opacity: 0.72;
+  filter: none;
+  background:
+    radial-gradient(
+      ellipse at center,
+      rgba(10, 10, 10, 0.24) 0%,
+      rgba(10, 10, 10, 0.11) 34%,
+      rgba(10, 10, 10, 0.035) 57%,
+      transparent 76%
+    );
+  opacity: var(--shadow-opacity);
+  -webkit-transform: translate3d(var(--shadow-shift-x), 0, 0) scale(var(--shadow-scale));
+  transform: translate3d(var(--shadow-shift-x), 0, 0) scale(var(--shadow-scale));
+  transition:
+    opacity 260ms ease,
+    transform 420ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.specimen[data-motion="flipping"] .specimen__shadow {
+  animation: specimen-shadow-breathe 620ms cubic-bezier(0.2, 0.75, 0.25, 1) both;
 }
 
 .card-face {
+  border: 1px solid transparent;
+  box-shadow: none;
   -webkit-transform-style: preserve-3d;
   transform-style: preserve-3d;
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
-  box-shadow: none;
   will-change: transform, opacity;
 }
 
+/* Disable the old blend-mode sheen plane on both faces. */
+.card-face::after {
+  display: none;
+}
+
 .card-face--front {
+  border-color: rgba(255, 255, 255, 0.075);
   -webkit-transform: rotateY(0deg) translateZ(0.1px);
   transform: rotateY(0deg) translateZ(0.1px);
   opacity: 1;
   pointer-events: auto;
+  background:
+    radial-gradient(
+      circle at var(--glint-x) var(--glint-y),
+      rgba(255, 255, 255, var(--glint-opacity)) 0%,
+      rgba(255, 255, 255, 0.055) 12%,
+      transparent 35%
+    ),
+    linear-gradient(118deg, rgba(255, 255, 255, 0.05), transparent 28%),
+    repeating-linear-gradient(
+      0deg,
+      rgba(255, 255, 255, 0.012) 0 1px,
+      transparent 1px 4px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.009) 0 1px,
+      transparent 1px 5px
+    ),
+    #090909;
 }
 
 .card-face--back {
+  border-color: rgba(10, 10, 10, 0.065);
   -webkit-transform: rotateY(180deg) translateZ(0.1px);
   transform: rotateY(180deg) translateZ(0.1px);
   opacity: 0;
   pointer-events: none;
-}
-
-/* Do not put a blend-mode texture plane over the light reverse artwork. */
-.card-face--back::after {
-  display: none;
+  background:
+    radial-gradient(
+      circle at var(--glint-x) var(--glint-y),
+      rgba(255, 255, 255, var(--glint-opacity)) 0%,
+      rgba(255, 255, 255, 0.24) 18%,
+      transparent 43%
+    ),
+    repeating-linear-gradient(
+      0deg,
+      rgba(10, 10, 10, 0.018) 0 1px,
+      transparent 1px 4px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      rgba(10, 10, 10, 0.012) 0 1px,
+      transparent 1px 5px
+    ),
+    linear-gradient(145deg, #fffef9 0%, #f8f6ef 58%, #efede5 100%);
 }
 
 .specimen[data-face="back"] .card-face--front {
@@ -84,13 +187,43 @@
   pointer-events: auto;
 }
 
-@media (max-width: 640px) {
-  .field::before {
-    top: 112px;
+/* Slight edge compression makes the card read as printed stock, not a panel. */
+.card-face--front::before,
+.card-face--back::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 8;
+  border-radius: inherit;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08), transparent 5%, transparent 93%, rgba(10, 10, 10, 0.045)),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.045), transparent 4%, transparent 96%, rgba(10, 10, 10, 0.035));
+  opacity: 0.48;
+}
+
+@keyframes specimen-shadow-breathe {
+  0% {
+    opacity: var(--shadow-opacity);
+    transform: translate3d(var(--shadow-shift-x), 0, 0) scale(var(--shadow-scale));
+  }
+  48% {
+    opacity: 0.2;
+    transform: translate3d(var(--shadow-shift-x), 8px, 0) scale(0.82, 0.68);
+  }
+  100% {
+    opacity: 0.42;
+    transform: translate3d(0, 0, 0) scale(1);
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .specimen__card,
+  .specimen__shadow {
+    transition-duration: 0.001ms !important;
+    animation: none !important;
+  }
+
   .card-face {
     will-change: auto;
   }
