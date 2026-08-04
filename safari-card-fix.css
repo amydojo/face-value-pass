@@ -56,8 +56,7 @@
   will-change: transform;
   -webkit-transform-style: preserve-3d;
   transform-style: preserve-3d;
-  transition:
-    transform var(--settle-duration) cubic-bezier(0.18, 0.88, 0.22, 1.08);
+  transition: transform var(--settle-duration) cubic-bezier(0.18, 0.76, 0.2, 1);
   -webkit-transform:
     translate3d(var(--drag-shift-x), var(--drag-shift-y), var(--drag-lift))
     rotateX(calc(2deg + var(--tilt-x)))
@@ -79,11 +78,11 @@
 }
 
 .specimen[data-motion="flipping"] .specimen__card {
-  transition-timing-function: cubic-bezier(0.16, 0.92, 0.25, 1.12);
+  transition-timing-function: cubic-bezier(0.16, 0.8, 0.18, 1);
 }
 
 .specimen[data-motion="settling"] .specimen__card {
-  transition-timing-function: cubic-bezier(0.2, 0.82, 0.28, 1.12);
+  transition-timing-function: cubic-bezier(0.2, 0.78, 0.24, 1);
 }
 
 /* Flat 2D contact shadow. No rotateX, blur filter, or 3D depth plane. */
@@ -121,11 +120,12 @@
 .card-face {
   border: 1px solid transparent;
   box-shadow: none;
+  opacity: 1;
   -webkit-transform-style: preserve-3d;
   transform-style: preserve-3d;
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
-  will-change: transform, opacity;
+  will-change: transform;
 }
 
 /* Disable the old blend-mode sheen plane on both faces. */
@@ -137,7 +137,6 @@
   border-color: rgba(255, 255, 255, 0.075);
   -webkit-transform: rotateY(0deg) translateZ(0.1px);
   transform: rotateY(0deg) translateZ(0.1px);
-  opacity: 1;
   pointer-events: auto;
   background:
     radial-gradient(
@@ -164,7 +163,6 @@
   border-color: rgba(10, 10, 10, 0.065);
   -webkit-transform: rotateY(180deg) translateZ(0.1px);
   transform: rotateY(180deg) translateZ(0.1px);
-  opacity: 0;
   pointer-events: none;
   background:
     radial-gradient(
@@ -186,13 +184,12 @@
     linear-gradient(145deg, #fffef9 0%, #f8f6ef 58%, #efede5 100%);
 }
 
+/* Face ownership changes only after the continuous transform finishes. */
 .specimen[data-face="back"] .card-face--front {
-  opacity: 0;
   pointer-events: none;
 }
 
 .specimen[data-face="back"] .card-face--back {
-  opacity: 1;
   pointer-events: auto;
 }
 
