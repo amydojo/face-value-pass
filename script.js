@@ -117,13 +117,14 @@
     const travelDuration = reduced ? 20 : Math.round(clamp(560 - speed * 115, 370, 560));
     const settleDuration = reduced ? 0 : 145;
     const overshoot = reduced ? 0 : 4.5;
+    const startingRotation = flipRotation;
 
     isFlipping = true;
     setDragging(false);
     specimen.dataset.motion = 'flipping';
     rebaseAtCurrentRotation();
 
-    const targetRotation = flipRotation + normalizedDirection * 180;
+    const targetRotation = startingRotation + normalizedDirection * 180;
     const overshootRotation = targetRotation + normalizedDirection * overshoot;
 
     setCss('--settle-duration', `${travelDuration}ms`);
