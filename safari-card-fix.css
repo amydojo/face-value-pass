@@ -17,6 +17,15 @@
   display: none;
 }
 
+/* The scanline exists only during the actuator intake sequence. */
+.field-scanline {
+  display: none;
+}
+
+.portal[data-stage="activating"] .field-scanline {
+  display: block;
+}
+
 .specimen {
   --flip-rotation: 0deg;
   --drag-rotation: 0deg;
