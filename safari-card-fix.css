@@ -1,0 +1,61 @@
+/*
+ * Mobile Safari can flatten a rotating 3D element when that element also
+ * carries a CSS filter. When flattened, WebKit may paint the mirrored front
+ * instead of the intentionally separate reverse artwork. Keep the shadow on
+ * the sibling shadow layer and make face ownership explicit.
+ */
+
+.artifact-stage {
+  -webkit-perspective: 1400px;
+}
+
+.specimen,
+.specimen__card {
+  -webkit-transform-style: preserve-3d;
+  transform-style: preserve-3d;
+}
+
+.specimen__card {
+  /* filter creates a flattening context in iOS Safari */
+  filter: none;
+  will-change: transform;
+}
+
+.card-face {
+  -webkit-transform-style: preserve-3d;
+  transform-style: preserve-3d;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  box-shadow: 0 18px 24px rgba(10, 10, 10, 0.18);
+  will-change: transform, opacity;
+}
+
+.card-face--front {
+  -webkit-transform: rotateY(0deg) translateZ(0.1px);
+  transform: rotateY(0deg) translateZ(0.1px);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.card-face--back {
+  -webkit-transform: rotateY(180deg) translateZ(0.1px);
+  transform: rotateY(180deg) translateZ(0.1px);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.specimen[data-face="back"] .card-face--front {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.specimen[data-face="back"] .card-face--back {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card-face {
+    will-change: auto;
+  }
+}
