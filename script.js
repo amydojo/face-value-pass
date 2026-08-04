@@ -1,6 +1,11 @@
 (() => {
   'use strict';
 
+  const safariCardFix = document.createElement('link');
+  safariCardFix.rel = 'stylesheet';
+  safariCardFix.href = '/safari-card-fix.css?v=20260803-1';
+  document.head.append(safariCardFix);
+
   const portal = document.querySelector('.portal');
   const specimen = document.querySelector('[data-specimen]');
   const actuator = document.querySelector('[data-actuator]');
