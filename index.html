@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#f7f6f1" />
+    <meta
+      name="description"
+      content="Face Value Specimen Pass — a physical-digital entry artifact for the Face Value skincare evidence instrument."
+    />
+    <meta property="og:title" content="Face Value · Specimen Pass" />
+    <meta
+      property="og:description"
+      content="A physical object has been detected. Receive the artifact, inspect it, and enter the Face Value instrument."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://pass.facevalue.undone.design" />
+    <link rel="canonical" href="https://pass.facevalue.undone.design" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/styles.css" />
+    <title>Face Value · Specimen Pass</title>
+  </head>
+  <body>
+    <a class="skip-link" href="#artifact">Skip to specimen pass</a>
+
+    <main class="portal" data-stage="receiving" aria-live="polite">
+      <header class="portal-header">
+        <div class="brand-lockup" aria-label="Face Value">
+          <span class="actuator actuator--mini" data-actuator-state="rest" aria-hidden="true">
+            <span class="actuator__bezel"></span>
+            <span class="actuator__recess"></span>
+            <span class="actuator__ring"></span>
+            <span class="actuator__cap"></span>
+            <span class="actuator__gloss"></span>
+          </span>
+          <span class="wordmark">face value<span class="wordmark__foot" aria-hidden="true"></span></span>
+        </div>
+        <p class="route-index">PORTAL / 01</p>
+      </header>
+
+      <section class="field" aria-labelledby="field-title">
+        <div class="field-grid" aria-hidden="true"></div>
+        <div class="field-scanline" aria-hidden="true"></div>
+
+        <div class="field-status">
+          <p class="eyebrow" id="field-title">PHYSICAL OBJECT DETECTED</p>
+          <p class="status-line" data-status-line>Receiving Specimen Pass · FV–01</p>
+        </div>
+
+        <div class="aperture" aria-hidden="true">
+          <div class="aperture__rail"></div>
+          <div class="aperture__mouth"></div>
+          <p>OBJECT INTAKE / FV–01</p>
+        </div>
+
+        <div class="artifact-stage" id="artifact">
+          <div
+            class="specimen"
+            data-specimen
+            data-face="front"
+            role="group"
+            aria-label="Interactive Face Value Specimen Pass. Swipe horizontally or use the flip button to inspect both sides."
+            tabindex="0"
+          >
+            <div class="specimen__shadow" aria-hidden="true"></div>
+            <div class="specimen__card">
+              <article class="card-face card-face--front" aria-label="Specimen Pass front">
+                <div class="card-front__top">
+                  <div class="card-brand">
+                    <button
+                      class="actuator actuator--card"
+                      type="button"
+                      data-actuator
+                      data-actuator-state="rest"
+                      aria-label="Activate Specimen Pass"
+                    >
+                      <span class="actuator__bezel"></span>
+                      <span class="actuator__recess"></span>
+                      <span class="actuator__ring"></span>
+                      <span class="actuator__cap"></span>
+                      <span class="actuator__gloss"></span>
+                    </button>
+                    <span class="wordmark wordmark--reverse">face value<span class="wordmark__foot" aria-hidden="true"></span></span>
+                  </div>
+                  <p class="card-meta card-meta--reverse">FV / ACCESS OBJECT / 01</p>
+                </div>
+                <div class="card-rule"></div>
+                <div class="card-front__body">
+                  <p class="card-title">SPECIMEN PASS</p>
+                  <p class="card-id">FV–01</p>
+                </div>
+                <div class="card-front__footer">
+                  <p>EVIDENCE FIRST.</p>
+                  <p>SYSTEM / 2026</p>
+                </div>
+              </article>
+
+              <article class="card-face card-face--back" aria-label="Specimen Pass back">
+                <div class="card-back__top">
+                  <p class="card-meta">SPECIMEN PASS / FV–01</p>
+                  <span class="actuator actuator--tiny" data-actuator-state="rest" aria-hidden="true">
+                    <span class="actuator__bezel"></span>
+                    <span class="actuator__recess"></span>
+                    <span class="actuator__ring"></span>
+                    <span class="actuator__cap"></span>
+                    <span class="actuator__gloss"></span>
+                  </span>
+                </div>
+                <p class="card-back__headline">ENTER THE<br />INSTRUMENT.</p>
+                <div class="card-back__middle">
+                  <p class="card-sequence">SCAN → OBSERVE<br />→ COMPARE → VERDICT</p>
+                  <div class="matrix-code" aria-label="Decorative specimen matrix, not a scannable QR code">
+                    <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+                  </div>
+                </div>
+                <p class="card-url">PASS.FACEVALUE.UNDONE.DESIGN</p>
+                <div class="card-rule card-rule--dark"></div>
+                <p class="card-back__footer">SYSTEM / 2026 / PRIVATE BY DEFAULT</p>
+              </article>
+            </div>
+          </div>
+
+          <div class="artifact-controls" data-artifact-controls>
+            <button class="text-control" type="button" data-flip>
+              FLIP OBJECT <span aria-hidden="true">↔</span>
+            </button>
+            <p>Swipe horizontally to inspect</p>
+          </div>
+        </div>
+
+        <section class="accepted" data-accepted hidden aria-labelledby="accepted-title">
+          <p class="eyebrow">ACCESS OBJECT ACCEPTED</p>
+          <h1 id="accepted-title" tabindex="-1">Evidence, before belief.</h1>
+          <p class="accepted__intro">
+            Face Value compares controlled skin evidence across time so you can decide whether a product earned its place.
+          </p>
+
+          <ol class="process" aria-label="How Face Value works">
+            <li>
+              <span>01</span>
+              <div><strong>Register one product</strong><p>Assign one job and establish the trial conditions.</p></div>
+            </li>
+            <li>
+              <span>02</span>
+              <div><strong>Capture comparable evidence</strong><p>Record baseline and follow-up observations under matched conditions.</p></div>
+            </li>
+            <li>
+              <span>03</span>
+              <div><strong>Receive a restrained verdict</strong><p>See what changed, confidence, and the next proportionate action.</p></div>
+            </li>
+          </ol>
+
+          <a
+            class="enter-button"
+            href="https://face-value-seven.vercel.app/?source=specimen-pass"
+            data-enter
+          >
+            <span>ENTER THE INSTRUMENT</span>
+            <span aria-hidden="true">→</span>
+          </a>
+          <p class="disclaimer">Face Value compares evidence. It does not diagnose reactions.</p>
+          <button class="replay" type="button" data-replay>Return specimen</button>
+        </section>
+      </section>
+
+      <footer class="portal-footer">
+        <p>NO ACCOUNT · NO TRACKING · NO DATA COLLECTED</p>
+        <p>FACE VALUE / PHYSICAL–DIGITAL ENTRY SYSTEM</p>
+      </footer>
+    </main>
+
+    <noscript>
+      <div class="noscript-card">
+        <p>Face Value Specimen Pass requires JavaScript for the artifact interaction.</p>
+        <a href="https://face-value-seven.vercel.app/?source=specimen-pass">Enter the Face Value instrument →</a>
+      </div>
+    </noscript>
+    <script src="/script.js" defer></script>
+  </body>
+</html>
