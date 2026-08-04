@@ -1,0 +1,8 @@
+/* Final access-handoff polish. */
+.handoff {
+  --reader-signal: var(--signal);
+}
+
+.handoff.is-visible {
+  pointer-events: auto;
+}
